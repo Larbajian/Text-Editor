@@ -24,7 +24,7 @@ module.exports = () => {
         template: "./index.html",
         title: "Webpack Plugin",
       }),
-      new MiniCssExtractPlugin(),
+    
       new WorkboxPlugin.GenerateSW(),
       new InjectManifest({
         swSrc: 'src-sw.js',
@@ -51,10 +51,7 @@ module.exports = () => {
 
     module: {
       rules: [
-        {
-          test: /\.css$/i,
-          use: [MiniCssExtractPlugin.loader, "css-loader"],
-        },
+
         {
           test: /\.css$/i, 
           use: ["style-loader", "css-loader"], 
