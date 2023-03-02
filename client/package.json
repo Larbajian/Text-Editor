@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "webpack-dev-server",
     "build": "webpack --mode production",
-    "start": "npm run build && cd server && node server.js"
+    "start": "webpack --watch"
   },
   "author": "2U",
   "license": "UNLICENSED",
