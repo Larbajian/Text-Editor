@@ -1,9 +1,9 @@
 const { offlineFallback, warmStrategyCache } = require('workbox-recipes');
-const { CacheFirst } = require('workbox-strategies');
-const { registerRoute, Route } = require('workbox-routing');
+const { CacheFirst, StaleWhileRevalidate } = require('workbox-strategies');
+const { registerRoute, setDefaultHandler, setCatchHandler } = require('workbox-routing');
 const { CacheableResponsePlugin } = require('workbox-cacheable-response');
 const { ExpirationPlugin } = require('workbox-expiration');
-const { precacheAndRoute } = require('workbox-precaching/precacheAndRoute');
+const { precacheAndRoute, matchPrecache } = require('workbox-precaching');
 
 precacheAndRoute(self.__WB_MANIFEST); //cachefirst that checks precache to update
 //first then ries network if there is a caching route error
@@ -30,6 +30,29 @@ warmStrategyCache({ //creates data for user to use
 registerRoute(({ request }) => request.mode === 'navigate', pageCache);
 
 
+//route if other pages are not able to load
+const offlineStrategy = new CacheFirst();
+
+warmStrategyCache({ //creates data for user to use 
+  urls: ['/offline.html'],
+  strategy: offlineStrategy,
+});
+
+setDefaultHandler( new StaleWhileRevalidate());
+
+setCatchHandler( async ({ request }) => {
+switch( request.destination) {
+  case 'document':
+    return matchPrecache(offline.html);
+  
+  default:
+    return Response.error();
+
+}
+});
+
+
+
 // TODO: Implement asset caching
 //implemet asset caching in PWA  
 //route to cache resources and assets
@@ -53,10 +76,11 @@ registerRoute(
 );
 
 
+
+
 //keyword search of caching within docs -> video results
 
 
 
 registerRoute();
-registerRoute(imageRoute);
-registerRoute(scriptsRoute);
+
