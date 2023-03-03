@@ -25,19 +25,19 @@ module.exports = () => {
         title: "Webpack Plugin",
       }),
     
-      new WorkboxPlugin.GenerateSW(),
+      //new WorkboxPlugin.GenerateSW(),
       new InjectManifest({
         swSrc: './src-sw.js',
-        swDest: 'worker.js',
+        swDest: 'src-sw.js',
       }),
       new WebpackPwaManifest({
-        name: 'TODOs',
-        short_name: 'TODOs',
-        description: 'Keep track of important tasks!',
+        name: 'jate',
+        short_name: 'jate',
+        description: 'text editor!',
         background_color: '#7eb4e2',
         theme_color: '#7eb4e2',
-        start_url: './',
-        publicPath: './',
+        start_url: '/',
+        publicPath: '/',
         icons: [
           {
             src: path.resolve('src/images/logo.png'),
