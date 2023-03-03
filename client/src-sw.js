@@ -5,8 +5,10 @@ const { CacheableResponsePlugin } = require('workbox-cacheable-response');
 const { ExpirationPlugin } = require('workbox-expiration');
 const { precacheAndRoute } = require('workbox-precaching/precacheAndRoute');
 
-precacheAndRoute(self.__WB_MANIFEST);
+precacheAndRoute(self.__WB_MANIFEST); //cachefirst that checks precache to update
+//first then ries network if there is a caching route error
 
+//caches pages
 const pageCache = new CacheFirst({
   cacheName: 'page-cache',
   plugins: [
@@ -19,39 +21,36 @@ const pageCache = new CacheFirst({
   ],
 });
 
-warmStrategyCache({
+warmStrategyCache({ //creates data for user to use 
   urls: ['/index.html', '/'],
   strategy: pageCache,
 });
 
+//route for cached pages
 registerRoute(({ request }) => request.mode === 'navigate', pageCache);
 
 
 // TODO: Implement asset caching
 //implemet asset caching in PWA  
-
-const imageRoute = new Route(({ request }) => {
-  return request.destination === 'image';
-}, new CacheFirst({
-  cacheName: 'images',
-  plugins: [
-    new ExpirationPlugin({
-      maxAgeSeconds: 60 * 60 * 24 * 30,
-    })
-  ]
-}));
-
-
-const scriptsRoute = new Route(({ request }) => {
-  return request.destination === 'script';
-}, new CacheFirst({
-  cacheName: 'scripts',
-  plugins: [
-    new ExpirationPlugin({
-      maxEntries: 50,
-    })
-  ]
-}));
+//route to cache resources and assets
+// Set up asset cache
+registerRoute(
+  //indicates whih assets to cache
+  ({ request }) => ['style', 'script', 'worker', 'manifest','serviceworker'].includes(request.destination), //destination returna string describing content being requested
+  new CacheFirst({
+    
+    cacheName: 'asset-cache',
+    plugins: [
+      // This plugin will cache responses with these headers to a maximum-age of 30 days
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+      new ExpirationPlugin({
+        maxAgeSeconds: 30 * 24 * 60 * 60,
+      }),
+    ],
+  })
+);
 
 
 //keyword search of caching within docs -> video results
